@@ -18,7 +18,6 @@ def test_create_project():
     project = {"name": "New Project", "description": "New Description"}
     response = client.post("/projects", json=project)
     assert response.status_code == status.HTTP_201_CREATED
-    response_json_data = response.json()
     assert response.json() == {
         "id": 2,
         "name": "New Project",
