@@ -13,7 +13,7 @@ class CreateUpdateProject(BaseModel):
     description: Optional[str] = None
 
     @field_validator("name")
-    def name_must_not_be_empty(self, value):
+    def name_must_not_be_empty(cls, value):
         if not value or value.strip() == "":
             raise ValueError("name must not be an empty string")
         return value
