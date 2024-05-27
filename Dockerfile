@@ -12,5 +12,7 @@ RUN pip install -r requirements.txt
 #Copy of the local dir to the working dir
 COPY . .
 
+ENV PYTHONPATH=/app
+
 #Cmd to run app within the container
 CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
