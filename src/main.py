@@ -1,9 +1,9 @@
 from fastapi import FastAPI, HTTPException, status, Depends
 from typing_extensions import List
 from sqlalchemy.orm import Session
-from .schemas import Project, CreateUpdateProject
-from . import models, crud
-from .database import engine, get_db
+from src.schemas import Project, CreateUpdateProject
+from src import models, crud
+from src.database import engine, get_db
 
 
 models.Base.metadata.create_all(bind=engine)
