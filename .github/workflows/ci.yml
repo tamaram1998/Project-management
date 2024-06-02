@@ -15,7 +15,8 @@ jobs:
     env:
       PYTHONPATH: ${{ github.workspace }}
       POSTGRES_DB: test_db
-      DATABASE_URL: postgresql://postgres:password@localhost/test_db
+      DATABASE_URL: postgresql://postgres@localhost/test_db
+      POSTGRES_HOST_AUTH_METHOD: trust
 
     services:
         postgres:
