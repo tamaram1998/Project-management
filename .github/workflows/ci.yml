@@ -16,8 +16,7 @@ jobs:
       PYTHONPATH: ${{ github.workspace }}
       POSTGRES_DB: test_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      DATABASE_URL: postgresql://postgres:postgres@localhost/test_db
+      DATABASE_URL: postgresql://postgres@localhost/test_db
 
     services:
         postgres:
@@ -27,7 +26,6 @@ jobs:
           env:
             POSTGRES_DB: test_db
             POSTGRES_USER: postgres
-            POSTGRES_PASSWORD: postgres
           options: >-
             --health-cmd "pg_isready -U postgres"
             --health-interval 10s
