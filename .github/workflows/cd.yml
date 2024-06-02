@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - feature/db-setup
 
 jobs:
   build_docker_image:

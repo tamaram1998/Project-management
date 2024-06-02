@@ -1,16 +1,15 @@
 from pydantic import BaseModel, field_validator
-from typing import Optional
 
 
 class Project(BaseModel):
-    id: int
+    project_id: int
     name: str
-    description: Optional[str] = None
+    description: str
 
 
 class CreateUpdateProject(BaseModel):
     name: str
-    description: Optional[str] = None
+    description: str
 
     @field_validator("name")
     def name_must_not_be_empty(cls, value):

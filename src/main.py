@@ -1,77 +1,67 @@
-from fastapi import FastAPI, HTTPException, status
-from typing import List, Dict
+from fastapi import FastAPI, HTTPException, status, Depends
+from typing_extensions import List
+from sqlalchemy.orm import Session
+from .schemas import Project, CreateUpdateProject
+from . import models, crud
+from .database import engine, get_db
 
-from src.pydantic_models import Project, CreateUpdateProject
+
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# In-memory storage
-projects_db: Dict[int, Project] = {}
-
-
 # Create a new project endpoint
-@app.post("/projects", response_model=Project, status_code=status.HTTP_201_CREATED)
-def create_project(project: CreateUpdateProject):
-    next_id = max(projects_db.keys(), default=0) + 1
-    new_project = Project(
-        id=next_id, name=project.name, description=project.description
-    )
-    projects_db[next_id] = new_project
 
-    return new_project
+
+@app.post("/projects", response_model=Project, status_code=status.HTTP_201_CREATED)
+async def create_project(project: CreateUpdateProject, db: Session = Depends(get_db)):
+    return crud.create_one_project(db=db, project=project)
 
 
 # Get all projects endpoint
 @app.get("/projects", response_model=List[Project], status_code=status.HTTP_200_OK)
-def get_all_projects():
-    return projects_db.values()
+async def list_all_projects(db: Session = Depends(get_db)):
+    return crud.get_all_projects(db=db)
 
 
 # Get all projects specific details
 @app.get(
     "/project/{project_id}/info", response_model=Project, status_code=status.HTTP_200_OK
 )
-def get_project_details(project_id: int):
-    # If no project is found with the given ID, raise a 404 HTTPException
-    if project_id not in projects_db:
+def get_project_details(project_id: int, db: Session = Depends(get_db)):
+    db_project = crud.get_project_info(project_id=project_id, db=db)
+    if db_project is None:
         raise HTTPException(
             status_code=404, detail=f"Project with ID {project_id} not found"
         )
+    return db_project
 
-    return projects_db[project_id]
 
-
-# Update specific project details endpoint
+# Update a project endpoint
 @app.put(
     "/project/{project_id}/info",
     response_model=Project,
     status_code=status.HTTP_202_ACCEPTED,
 )
-def update_project_details(project_id: int, updated_project: CreateUpdateProject):
-    # Check if the project with the given ID exists
-    if project_id not in projects_db:
+def update_project_details(
+    project_id: int, project: CreateUpdateProject, db: Session = Depends(get_db)
+):
+    db_project = crud.update_project_info(db=db, project=project, project_id=project_id)
+    if db_project is None:
         raise HTTPException(
             status_code=404, detail=f"Project with ID {project_id} not found"
         )
-    # Retrieve the project from the database
-    project = projects_db[project_id]
-    # Update project details based on the provided project_update
-    project.name = updated_project.name
-    project.description = updated_project.description
-
-    return project
+    return db_project
 
 
 # Delete a project endpoint
 @app.delete("/project/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_project(project_id: int):
-    if project_id not in projects_db:
+def delete_project(project_id: int, db: Session = Depends(get_db)):
+    db_project = crud.delete_specific_project(project_id=project_id, db=db)
+    if db_project is None:
         raise HTTPException(
             status_code=404, detail=f"Project with ID {project_id} not found"
         )
-
-    del projects_db[project_id]
-    return {"message": "Project deleted successfully"}
 
 
 if __name__ == "__main__":
