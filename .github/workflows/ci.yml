@@ -64,4 +64,5 @@ jobs:
 
 
       - name: Running tests
-        run: pipenv run pytest
+        run: pipenv install pytest
+          pytest
