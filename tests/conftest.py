@@ -39,9 +39,9 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     return encoded_jwt
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="session")
 def create_user(db_session):
-    new_user = User(username="Testuser@example.com", hashed_password="testpassword")
+    new_user = User(username="testuser@example.com", hashed_password="testpassword")
     db_session.add(new_user)
     db_session.commit()
     db_session.refresh(new_user)
