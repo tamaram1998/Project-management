@@ -47,8 +47,7 @@ jobs:
           pip install pipenv
 
       - name: Install dependencies with Pipenv
-        working-directory: dependencies
-        run: pipenv install --deploy --dev
+        run: cd dependencies && pipenv install --deploy --dev && cd ..
 
       - name: Code formatting check
         run: |
