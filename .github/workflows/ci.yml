@@ -51,10 +51,10 @@ jobs:
         run: pipenv install --deploy --ignore-pipfile
 
       - name: Code formatting check
-        run: pipenv run black --check .
+        run: black --check .
 
       - name: Linting/code-style check
-        run: pipenv run flake8 .
+        run: flake8 .
 
       - name: Running tests
         run: pipenv run pytest
