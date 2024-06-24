@@ -52,12 +52,10 @@ jobs:
 
       - name: Code formatting check
         run: |
-          pipenv install black
           pipenv run black .
 
       - name: Linting/code-style check
         run: |
-          pipenv install 
           pipenv run flake8 .
 
       - name: Running tests
