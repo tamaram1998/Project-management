@@ -47,12 +47,16 @@ jobs:
           pip install pipenv
 
       - name: Install dependencies with Pipenv
+        run: |
+          cp ./dependencies/Pipfile .
+          cp ./dependencies/Pipfile.lock .
+
+      - name: Install dependencies with Pipenv
         run:
-          cd dependencies && pipenv install --deploy --dev --ignore-pipfile && cd ..
+          pipenv install --deploy --dev --ignore-pipfile
 
 
       - name: Show installed dependencies
-        working-directory: dependencies
         run: |
           pipenv graph
           pipenv run python -m pip freeze
