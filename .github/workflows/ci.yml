@@ -50,10 +50,13 @@ jobs:
         working-directory: dependencies
         run: pipenv install --deploy --ignore-pipfile
 
+      - name: Activate Pipenv virtual environment
+        run: |
+            source $(pipenv --venv)/bin/activate
+
+
       - name: Code formatting check
-        run: pipenv install black
-          pipenv shell
-          black
+        run: black
 
 
 
