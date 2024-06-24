@@ -3,6 +3,7 @@ import os
 import boto3
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, text
+from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm import sessionmaker
 from fastapi import status
 from unittest.mock import Mock
