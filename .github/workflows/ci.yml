@@ -53,14 +53,14 @@ jobs:
       - name: Code formatting check
         run: pipenv install black
           pipenv shell
-          black .
+          black
 
 
 
       - name: Linting/code-style check
         run: pipenv install flake8
           pipenv shell
-          flake8 .
+          flake8
 
 
       - name: Running tests
