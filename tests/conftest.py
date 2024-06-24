@@ -10,7 +10,7 @@ from unittest.mock import Mock
 
 from app.main import app, get_db
 from app.models import Project, User, Document, ProjectParticipant
-from app.auth.jwt_handler import SECRET_KEY, hash_pass
+from app.auth.jwt_handler import hash_pass
 from datetime import datetime, timedelta
 from moto import mock_aws
 from jose import JWTError, jwt
@@ -24,20 +24,32 @@ TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engin
 
 @pytest.fixture(scope="function")
 def mock_download_project_document(mocker):
-    mock_download_function = mocker.patch('app.crud.documents.download_project_document', new_callable=Mock)
-    mock_download_function.return_value = (b'Test file content', None)
+    mock_download_function = mocker.patch(
+        "app.crud.documents.download_project_document", new_callable=Mock
+    )
+    mock_download_function.return_value = (b"Test file content", None)
     return mock_download_function
 
 
-def create_access_token(data: dict, expires_delta: timedelta = None):
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(minutes=15)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm='HS256')
-    return encoded_jwt
+def create_access_token(data, secret_key, algorithm="HS256"):
+    encoded_claims = jwt.encode(data, secret_key, algorithm=algorithm)
+    return encoded_claims
+
+    # Usage example
+    data_to_encode = {"sub": "testuser@example.com", "exp": 1719273198}
+    SECRET_KEY = "my_secret_key"
+    ALGORITHM = "HS256"
+
+    token = create_access_token(data_to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return token
+    # to_encode = data.copy()
+    # if expires_delta:
+    #     expire = datetime.utcnow() + expires_delta
+    # else:
+    #     expire = datetime.utcnow() + timedelta(minutes=15)
+    # to_encode.update({"exp": expire})
+    # encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm='HS256')
+    # return encoded_jwt
 
 
 @pytest.fixture(scope="function")
@@ -53,7 +65,6 @@ def create_user(db_session):
         db_session.commit()
         db_session.refresh(new_user)
         return new_user
-
 
 
 @pytest.fixture(scope="function")
@@ -82,7 +93,8 @@ def test_client_with_auth(db_session, token):
 def s3_client():
     with mock_aws():
         conn = boto3.client(
-            "s3", region_name="us-east-1",
+            "s3",
+            region_name="us-east-1",
             aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
             aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
         )
@@ -135,7 +147,9 @@ def test_project(db_session, create_user):
     db_session.commit()
 
     # Create project and assign owner
-    new_project = Project(name="Test Project", description="Test Description", owner_id=owner_user.id)
+    new_project = Project(
+        name="Test Project", description="Test Description", owner_id=owner_user.id
+    )
     db_session.add(new_project)
 
     # Create participant user
@@ -147,9 +161,11 @@ def test_project(db_session, create_user):
         db_session.commit()
 
     # Adding a document to the project
-    new_document = Document(filename="document.pdf",
-                            file_url="http://example.com/document.pdf",
-                            project=new_project)
+    new_document = Document(
+        filename="document.pdf",
+        file_url="http://example.com/document.pdf",
+        project=new_project,
+    )
 
     db_session.add(new_document)
     db_session.commit()
