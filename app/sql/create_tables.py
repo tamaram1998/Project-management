@@ -1,7 +1,6 @@
-from sqlalchemy import create_engine, text
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 from src.database import Base, engine
-import os
 
 
 sql_file_path = "project_database.sql"
@@ -10,7 +9,7 @@ sql_file_path = "project_database.sql"
 Base.metadata.create_all(bind=engine)
 
 # open and execute script
-with open(sql_file_path, 'r') as file:
+with open(sql_file_path, "r") as file:
     sql_commands = file.read()
 
 # create a session and execute the script

@@ -1,3 +1,11 @@
 [flake8]
 # Set max line length to match Black's default
 max-line-length = 88
+
+# Set ignore since Flake8 cannot detect undefined names
+# Set ignore W503 to match with Black's default line break before binary operator structure
+ignore = F401, F403, F405, W503
+
+
+
+

@@ -1,4 +1,5 @@
-from shared_fixtures import *
+from conftest import *
+from sqlalchemy import text
 
 
 def test_create_project(test_client_with_auth):
@@ -23,23 +24,18 @@ def test_create_project_empty_name(test_client_with_auth):
 
 def test_get_all_projects(test_client_with_auth, test_project):
     response = test_client_with_auth.get("/projects")
-    print("Response Status Code:", response.status_code)
-    print("Response Headers:", response.headers)
-    projects = response.json()
-    print("Response JSON:", projects)
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 1
 
 
 def test_get_project_details(test_client_with_auth, test_project):
     response = test_client_with_auth.get("/project/1/info")
-    projects = response.json()
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == {
-        "project_id": 1,
-        "name": "Test Project",
-        "description": "Test Description"
-    }
+    data = response.json()
+    assert data['owner_id'] is not None
+    assert data['project_id'] == 1
+    assert data['name'] == "Test Project"
+    assert data['description'] == "Test Description"
 
 
 def test_get_nonexistent_project_details(test_client_with_auth, test_project):
@@ -77,4 +73,3 @@ def test_delete_nonexistent_project(test_client_with_auth, test_project):
     response = test_client_with_auth.delete("/project/999")
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert response.json() == {"detail": "Project with ID 999 not found"}
-
