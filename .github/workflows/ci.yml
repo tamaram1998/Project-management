@@ -50,18 +50,14 @@ jobs:
         working-directory: dependencies
         run: pipenv install --deploy --ignore-pipfile
 
-
       - name: Code formatting check
-        run: pipenv install --dev
-          pipenv run black
-
-
+        run: |
+          pipenv run black .
 
       - name: Linting/code-style check
-        run: pipenv install --dev
-          pipenv run black
-
+        run: |
+          pipenv run flake8 . 
 
       - name: Running tests
-        run: pipenv install --dev
-            pipenv run pytest
+        run: |
+          pipenv run pytest --disable-warnings --capture=no
