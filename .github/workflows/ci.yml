@@ -52,7 +52,7 @@ jobs:
 
       - name: Activate Pipenv virtual environment
         run: |
-            source $(pipenv --venv)/bin/activate
+            pipenv shell
 
 
       - name: Code formatting check
