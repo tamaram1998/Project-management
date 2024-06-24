@@ -67,4 +67,4 @@ jobs:
         run: |
           pipenv install pytest
           pipenv shell
-          pytest --disable-warnings
+          pytest --disable-warnings --capture=no
