@@ -10,7 +10,7 @@ from unittest.mock import Mock
 
 from app.main import app, get_db
 from app.models import Project, User, Document, ProjectParticipant
-from app.auth.jwt_handler import SECRET_KEY, ALGORITHM, hash_pass
+from app.auth.jwt_handler import SECRET_KEY, hash_pass
 from datetime import datetime, timedelta
 from moto import mock_aws
 from jose import JWTError, jwt
