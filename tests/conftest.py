@@ -21,6 +21,7 @@ engine = create_engine(TEST_DATABASE_URL)
 # Configured session class
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+SECRET_KEY = 'my_secret_key'
 
 @pytest.fixture(scope="function")
 def mock_download_project_document(mocker):
@@ -37,7 +38,7 @@ def create_access_token(data, secret_key, algorithm="HS256"):
 
     # Usage example
     data_to_encode = {"sub": "testuser@example.com", "exp": 1719273198}
-    SECRET_KEY = "my_secret_key"
+    SECRET_KEY = SECRET_KEY
     ALGORITHM = "HS256"
 
     token = create_access_token(data_to_encode, SECRET_KEY, algorithm=ALGORITHM)
@@ -70,7 +71,7 @@ def create_user(db_session):
 @pytest.fixture(scope="function")
 def token(create_user):
     test_user = create_user.__dict__
-    token = create_access_token(data={"sub": test_user["username"]})
+    token = create_access_token(data={"sub": test_user["username"]}, secret_key=SECRET_KEY)
     return token
 
 
