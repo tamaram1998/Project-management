@@ -48,14 +48,15 @@ jobs:
 
       - name: Install dependencies with Pipenv
         run:
-          cd dependencies && pipenv install --deploy --dev --ignore-pipfile
-          
-          cd .. && pipenv run black .
+          cd dependencies && pipenv install --deploy --dev --ignore-pipfile && cd ..
 
 
       - name: Show installed dependencies
         working-directory: dependencies
-        run: pipenv graph
+        run: |
+          pipenv graph
+          pipenv run python -m pip freeze
+
 
       - name: Code formatting check
         run: |
