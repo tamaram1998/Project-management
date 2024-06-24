@@ -48,7 +48,7 @@ jobs:
 
       - name: Install dependencies with Pipenv
         working-directory: dependencies
-        run: pipenv install --deploy --ignore-pipfile
+        run: pipenv install --deploy
 
       - name: Code formatting check
         run: |
