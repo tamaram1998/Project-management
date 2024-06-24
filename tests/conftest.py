@@ -39,13 +39,20 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     return encoded_jwt
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def create_user(db_session):
-    new_user = User(username="testuser@example.com", hashed_password="testpassword")
-    db_session.add(new_user)
-    db_session.commit()
-    db_session.refresh(new_user)
-    return new_user
+    username = "testuser@example.com"
+    try:
+        existing_user = db_session.query(User).filter_by(username=username).one()
+        return existing_user
+    except NoResultFound:
+        # User does not exist, create new user
+        new_user = User(username=username, hashed_password="testpassword")
+        db_session.add(new_user)
+        db_session.commit()
+        db_session.refresh(new_user)
+        return new_user
+
 
 
 @pytest.fixture(scope="function")
