@@ -39,9 +39,6 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     return encoded_jwt
 
 
-
-
-
 @pytest.fixture(scope="function")
 def create_user(db_session):
     new_user = User(username="testuser@example.com", hashed_password="testpassword")
@@ -100,7 +97,7 @@ def setup(db_session):
 @pytest.fixture(scope="function")
 def db_session():
     connection = engine.connect()
-    transaction = connection.begin()
+    # transaction = connection.begin()
     session = TestingSessionLocal(bind=connection)
     yield session
     session.close()
