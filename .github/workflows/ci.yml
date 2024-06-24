@@ -60,12 +60,11 @@ jobs:
 
       - name: Code formatting check
         run: |
-          pipenv run black .
+          pipenv run python -m black .
 
       - name: Linting/code-style check
         run: |
-          pipenv install flake8
-          pipenv run flake8 .
+          pipenv run python -m flake8 .
 
       - name: Running tests
         run: |
