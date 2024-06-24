@@ -52,7 +52,6 @@ jobs:
 
       - name: Code formatting check
         run: |
-#          pipenv install black
           pipenv run black .
 
       - name: Linting/code-style check
