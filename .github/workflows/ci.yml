@@ -48,14 +48,16 @@ jobs:
 
       - name: Install dependencies with Pipenv
         working-directory: dependencies
-        run: pipenv install --deploy
+        run: pipenv install --dev
 
       - name: Code formatting check
         run: |
+          pipenv install black
           pipenv run black .
 
       - name: Linting/code-style check
         run: |
+          pipenv install 
           pipenv run flake8 .
 
       - name: Running tests
