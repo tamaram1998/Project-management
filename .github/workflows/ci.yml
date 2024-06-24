@@ -16,6 +16,7 @@ jobs:
       PYTHONPATH: ${{ github.workspace }}
       POSTGRES_DB: test_db
       DATABASE_URL: postgresql://postgres@localhost/test_db
+      TEST_DATABASE_URL: postgresql://postgres@localhost/test_db
       POSTGRES_HOST_AUTH_METHOD: trust
 
     services:
@@ -55,22 +56,14 @@ jobs:
         run:
           pipenv install --deploy --dev --ignore-pipfile
 
-
-      - name: Show installed dependencies
-        run: |
-          pipenv graph
-          pipenv run python -m pip freeze
-
-
       - name: Code formatting check
         run: |
-          pipenv run python -m black .
+          pipenv run black .
 
       - name: Linting/code-style check
         run: |
-          pipenv run python -m flake8 .
+          pipenv run flake8 .
 
       - name: Running tests
         run: |
-          pipenv install pytest
           pipenv run pytest --disable-warnings --capture=no
