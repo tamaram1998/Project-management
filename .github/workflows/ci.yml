@@ -47,7 +47,10 @@ jobs:
           pip install pipenv
 
       - name: Install dependencies with Pipenv
-        run: cd dependencies && pipenv install --deploy --dev --ignore-pipfile && cd ..
+        run:
+          cd dependencies && pipenv install --deploy --dev --ignore-pipfile && cd ..
+          pipenv run black .
+
 
       - name: Show installed dependencies
         working-directory: dependencies
