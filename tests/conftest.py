@@ -7,7 +7,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm import sessionmaker
 from fastapi import status
 from unittest.mock import Mock
-from pytest_mock import mocker
+
 
 from app.main import app, get_db
 from app.models import Project, User, Document, ProjectParticipant
