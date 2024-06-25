@@ -64,10 +64,6 @@ def token(create_user):
     token = create_access_token(data={"sub": test_user["username"]})
     return token
 
-# def create_access_token(data, secret_key="your_secret_key_here", algorithm="HS256"):
-#     encoded_claims = jwt.encode(data, secret_key, algorithm=algorithm)
-#     return encoded_claims
-
 
 # @pytest.fixture(scope="function")
 # def token(create_user):
