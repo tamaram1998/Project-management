@@ -76,7 +76,6 @@ def create_user(db_session):
 #     secret_key=SECRET_KEY)
 #     return token
 
-
 def create_access_token(data, secret_key="your_secret_key_here", algorithm="HS256"):
     encoded_claims = jwt.encode(data, secret_key, algorithm=algorithm)
     return encoded_claims
@@ -169,9 +168,12 @@ def test_project(db_session, create_user):
     )
     db_session.add(new_project)
 
-    # Create participant user
-    participant_user = User(username="Participant User", hashed_password="12345")
-    db_session.add(participant_user)
+    # Create participant user if not exists
+    username = "Participant User"
+    participant_user = db_session.query(User).filter_by(username=username).first()
+    if not participant_user:
+        participant_user = User(username=username, hashed_password="12345")
+        db_session.add(participant_user)
 
     if participant_user not in new_project.participants:
         new_project.participants.append(participant_user)
