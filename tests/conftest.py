@@ -34,25 +34,15 @@ def mock_download_project_document(mocker):
     return mock_download_function
 
 
-# def create_access_token(data, secret_key, algorithm="HS256"):
-#     encoded_claims = jwt.encode(data, secret_key, algorithm=algorithm)
-#     return encoded_claims
-#
-#     # Usage example
-#     data_to_encode = {"sub": "testuser@example.com", "exp": 1719273198}
-#     SECRET_KEY = SECRET_KEY
-#     ALGORITHM = "HS256"
-#
-#     token = create_access_token(data_to_encode, SECRET_KEY, algorithm=ALGORITHM)
-#     return token
-# # to_encode = data.copy()
-# if expires_delta:
-#     expire = datetime.utcnow() + expires_delta
-# else:
-#     expire = datetime.utcnow() + timedelta(minutes=15)
-# to_encode.update({"exp": expire})
-# encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm='HS256')
-# return encoded_jwt
+def create_access_token(data: dict, expires_delta: timedelta = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
 
 
 @pytest.fixture(scope="function")
@@ -70,25 +60,24 @@ def create_user(db_session):
         return new_user
 
 
-# @pytest.fixture(scope="function")
-# def token(create_user):
-#     test_user = create_user.__dict__
-#     token = create_access_token(data={"sub": test_user["username"]},
-#     secret_key=SECRET_KEY)
-#     return token
-
-def create_access_token(data, secret_key="your_secret_key_here", algorithm="HS256"):
-    encoded_claims = jwt.encode(data, secret_key, algorithm=algorithm)
-    return encoded_claims
-
-
 @pytest.fixture(scope="function")
 def token(create_user):
     test_user = create_user.__dict__
-    token = create_access_token(
-        data={"sub": test_user["username"]}, secret_key="your_secret_key_here"
-    )
+    token = create_access_token(data={"sub": test_user["username"]})
     return token
+
+# def create_access_token(data, secret_key="your_secret_key_here", algorithm="HS256"):
+#     encoded_claims = jwt.encode(data, secret_key, algorithm=algorithm)
+#     return encoded_claims
+
+
+# @pytest.fixture(scope="function")
+# def token(create_user):
+#     test_user = create_user.__dict__
+#     token = create_access_token(
+#         data={"sub": test_user["username"]}, secret_key="your_secret_key_here"
+#     )
+#     return token
 
 
 @pytest.fixture(scope="function")
