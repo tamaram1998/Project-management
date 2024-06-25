@@ -22,7 +22,7 @@ from app.crud.documents import (
     update_project_document,
     get_project_documents,
     get_document,
-    delete_project_document
+    delete_project_document,
 )
 
 router = APIRouter()
