@@ -72,7 +72,8 @@ def create_user(db_session):
 # @pytest.fixture(scope="function")
 # def token(create_user):
 #     test_user = create_user.__dict__
-#     token = create_access_token(data={"sub": test_user["username"]}, secret_key=SECRET_KEY)
+#     token = create_access_token(data={"sub": test_user["username"]},
+#     secret_key=SECRET_KEY)
 #     return token
 
 
