@@ -1,7 +1,7 @@
 -- Create table 'users'
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    login VARCHAR(100) NOT NULL,
+    username VARCHAR(100) UNIQUE NOT NULL,
     hashed_password VARCHAR(100) NOT NULL
 );
 
@@ -16,14 +16,14 @@ CREATE TABLE projects (
 -- Create table 'project_participants'
 CREATE TABLE project_participants (
     id SERIAL PRIMARY KEY,
-    project_id INT REFERENCES projects(project_id),
+    project_id INT REFERENCES projects(project_id) ON DELETE CASCADE,
     user_id INT REFERENCES users(id)
 );
 
 -- Create table 'documents'
-CREATE TABLE documents(
-	id SERIAL PRIMARY KEY,
-	project_id INT REFERENCES projects(project_id),
-	filename VARCHAR(100) NOT NULL
-	file_url VARCHAR(100) NOT NULL
+CREATE TABLE documents (
+    id SERIAL PRIMARY KEY,
+    project_id INT REFERENCES projects(project_id) ON DELETE CASCADE,
+    filename VARCHAR(100) NOT NULL,
+    file_url VARCHAR(100) NOT NULL
 );
