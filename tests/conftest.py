@@ -11,7 +11,7 @@ from unittest.mock import Mock
 
 from app.main import app, get_db
 from app.models import Project, User, Document, ProjectParticipant
-from app.auth.jwt_handler import hash_pass
+from app.auth.jwt_handler import SECRET_KEY, hash_pass, ALGORITHM
 from datetime import datetime, timedelta
 from moto import mock_aws
 from jose import JWTError, jwt
@@ -21,8 +21,6 @@ engine = create_engine(TEST_DATABASE_URL)
 
 # Configured session class
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-SECRET_KEY = "my_secret_key"
 
 
 @pytest.fixture(scope="function")
