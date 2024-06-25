@@ -20,6 +20,10 @@ jobs:
       POSTGRES_HOST_AUTH_METHOD: trust
       SECRET_KEY: b555e3871d14dab1b8e8a5e2f0963c69
       ALGORITHM: HS256
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_S3_BUCKET_NAME: "myapp-documents-bucket"
+      AWS_DEFAULT_REGION: "eu-central-1"
 
     services:
         postgres:
