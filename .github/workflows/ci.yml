@@ -18,6 +18,8 @@ jobs:
       TEST_DATABASE_URL: postgresql://postgres@localhost/test_db
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       POSTGRES_HOST_AUTH_METHOD: trust
+      SECRET_KEY: b555e3871d14dab1b8e8a5e2f0963c69
+      ALGORITHM: HS256
 
     services:
         postgres:
