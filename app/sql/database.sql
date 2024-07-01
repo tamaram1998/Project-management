@@ -11,7 +11,7 @@ CREATE TABLE projects (
     name VARCHAR(100) NOT NULL,
     description TEXT,
     owner_id INT REFERENCES users(id),
-    logo_url VARCHAR(100) NULL
+    logo_url VARCHAR(100)
 );
 
 -- Create table 'project_participants'
