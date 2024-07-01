@@ -53,7 +53,7 @@ jobs:
         run: python -m pip install --upgrade pip
           pip install pipenv
 
-      - name: Install dependencies with Pipenv
+      - name: Copy Pipenv files
         run: |
           cp ./dependencies/Pipfile .
           cp ./dependencies/Pipfile.lock .

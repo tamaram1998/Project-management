@@ -10,9 +10,8 @@ CREATE TABLE projects (
     project_id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     description TEXT,
-    owner_id INT REFERENCES users(id)
+    owner_id INT REFERENCES users(id),
     logo_url VARCHAR(100) NOT NULL
-
 );
 
 -- Create table 'project_participants'
