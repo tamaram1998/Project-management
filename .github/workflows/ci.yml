@@ -15,8 +15,15 @@ jobs:
     env:
       PYTHONPATH: ${{ github.workspace }}
       POSTGRES_DB: test_db
-      DATABASE_URL: postgresql://postgres@localhost/test_db
+      TEST_DATABASE_URL: postgresql://postgres@localhost/test_db
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
       POSTGRES_HOST_AUTH_METHOD: trust
+      SECRET_KEY: b555e3871d14dab1b8e8a5e2f0963c69
+      ALGORITHM: HS256
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_S3_BUCKET_NAME: "myapp-documents-bucket"
+      AWS_DEFAULT_REGION: "eu-central-1"
 
     services:
         postgres:
@@ -42,16 +49,31 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Install dependencies
+      - name: Install Pipenv
+        run: python -m pip install --upgrade pip
+          pip install pipenv
+
+      - name: Install dependencies with Pipenv
         run: |
-          python -m pip install --upgrade pip
-          pip install -r ./dependencies/requirements.txt
+          cp ./dependencies/Pipfile .
+          cp ./dependencies/Pipfile.lock .
+
+      - name: Install dependencies with Pipenv
+        run:
+          pipenv install --deploy --dev --ignore-pipfile
 
       - name: Code formatting check
-        run: black --check .
+        run: |
+          pipenv run black .
 
       - name: Linting/code-style check
-        run: flake8 .
+        run: |
+          pipenv run flake8 .
+
+      - name: Create test database
+        run: |
+          psql $TEST_DATABASE_URL -f ./app/sql/database.sql
 
       - name: Running tests
-        run: pytest
+        run: |
+          pipenv run pytest --disable-warnings --capture=no

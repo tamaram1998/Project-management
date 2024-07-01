@@ -19,7 +19,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 
-# Dependency to get the session
+# dependency to get the session
 def get_db():
     db = SessionLocal()
     try:
