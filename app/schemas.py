@@ -41,7 +41,7 @@ class ProjectDocumentInfo(BaseModel):
 
 
 class UsersCreate(BaseModel):
-    username: EmailStr = Field(default=None)
+    email: EmailStr = Field(default=None)
     password: str
     repeat_password: str
 
@@ -66,13 +66,12 @@ class UsersCreate(BaseModel):
 
 
 class UserResponse(BaseModel):
-    username: EmailStr
-    hashed_password: str
+    email: EmailStr
     id: int
 
 
 class UsersLogin(BaseModel):
-    username: EmailStr = Field(default=None)
+    email: EmailStr = Field(default=None)
     password: str = Field(default=None)
 
 
@@ -84,4 +83,3 @@ class UsersLoginResponse(BaseModel):
 class DocumentResponse(BaseModel):
     id: int
     filename: str
-    file_url: str

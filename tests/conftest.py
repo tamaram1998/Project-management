@@ -8,7 +8,6 @@ from sqlalchemy.orm import sessionmaker
 from fastapi import status
 from unittest.mock import Mock
 
-
 from app.main import app, get_db
 from app.models import Project, User, Document, ProjectParticipant
 from app.auth.jwt_handler import SECRET_KEY, hash_pass, ALGORITHM
@@ -45,13 +44,13 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
 
 @pytest.fixture(scope="function")
 def create_user(db_session):
-    username = "testuser@example.com"
+    email = "testuser@example.com"
     try:
-        existing_user = db_session.query(User).filter_by(username=username).one()
+        existing_user = db_session.query(User).filter_by(email=email).one()
         return existing_user
     except NoResultFound:
         # User does not exist, create new user
-        new_user = User(username=username, hashed_password="testpassword")
+        new_user = User(email=email, hashed_password="testpassword")
         db_session.add(new_user)
         db_session.commit()
         db_session.refresh(new_user)
@@ -61,17 +60,8 @@ def create_user(db_session):
 @pytest.fixture(scope="function")
 def token(create_user):
     test_user = create_user.__dict__
-    token = create_access_token(data={"sub": test_user["username"]})
+    token = create_access_token(data={"sub": test_user["email"]})
     return token
-
-
-# @pytest.fixture(scope="function")
-# def token(create_user):
-#     test_user = create_user.__dict__
-#     token = create_access_token(
-#         data={"sub": test_user["username"]}, secret_key="your_secret_key_here"
-#     )
-#     return token
 
 
 @pytest.fixture(scope="function")
@@ -110,6 +100,7 @@ def bucket_name():
 @pytest.fixture(scope="function", autouse=True)
 def setup(db_session):
     db_session.execute(text("TRUNCATE TABLE projects RESTART IDENTITY CASCADE"))
+    db_session.execute(text("TRUNCATE TABLE users RESTART IDENTITY CASCADE"))
     db_session.commit()
 
 
@@ -148,15 +139,18 @@ def test_project(db_session, create_user):
 
     # Create project and assign owner
     new_project = Project(
-        name="Test Project", description="Test Description", owner_id=owner_user.id
+        name="Test Project",
+        description="Test Description",
+        owner_id=owner_user.id,
+        logo_url="https://example.com/logo.png",
     )
     db_session.add(new_project)
 
     # Create participant user if not exists
-    username = "Participant User"
-    participant_user = db_session.query(User).filter_by(username=username).first()
+    email = "Participant User"
+    participant_user = db_session.query(User).filter_by(email=email).first()
     if not participant_user:
-        participant_user = User(username=username, hashed_password="12345")
+        participant_user = User(email=email, hashed_password="12345")
         db_session.add(participant_user)
 
     if participant_user not in new_project.participants:

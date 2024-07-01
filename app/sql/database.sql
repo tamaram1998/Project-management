@@ -1,7 +1,7 @@
 -- Create table 'users'
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    username VARCHAR(100) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
     hashed_password VARCHAR(100) NOT NULL
 );
 
@@ -11,6 +11,8 @@ CREATE TABLE projects (
     name VARCHAR(100) NOT NULL,
     description TEXT,
     owner_id INT REFERENCES users(id)
+    logo_url VARCHAR(100) NOT NULL
+
 );
 
 -- Create table 'project_participants'

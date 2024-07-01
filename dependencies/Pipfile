@@ -27,12 +27,13 @@ moto = "==5.0.9"
 requests = "==2.32.3"
 python-jose = "==3.3.0"
 zipp = "3.19.2"
+pillow = "10.3.0"
+
 
 [dev-packages]
 pytest = "==8.2.1"
 flake8 = "==7.0.0"
 black = "==24.4.2"
-
 
 [requires]
 python_version = "3.9"

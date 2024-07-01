@@ -1,7 +1,7 @@
 from datetime import timedelta, datetime
 import os
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import Depends, HTTPException, status, Form
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
@@ -27,8 +27,8 @@ def verify_password(plain_password: str, hashed_password: str):
 
 
 # create token
-async def create_access_token(username: str):
-    to_encode = {"sub": username}
+async def create_access_token(email: str):
+    to_encode = {"sub": email}
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
@@ -39,19 +39,19 @@ async def get_current_user(
 ):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
+        email: str = payload.get("sub")
         expire: datetime = payload.get("exp")
         if expire and datetime.utcfromtimestamp(expire) < datetime.utcnow():
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid or expired token",
             )
-        if username is None:
+        if email is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid or expired token",
             )
-        user = db.query(User).filter(User.username == username).first()
+        user = db.query(User).filter(User.email == email).first()
         if user is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -65,8 +65,8 @@ async def get_current_user(
         )
 
 
-async def authenticate(db: Session, username: str, password: str):
-    db_user = db.query(User).filter(User.username == username).first()
+async def authenticate(db: Session, email: str, password: str):
+    db_user = db.query(User).filter(User.email == email).first()
     if not db_user:
         return False
     if not verify_password(password, db_user.hashed_password):
