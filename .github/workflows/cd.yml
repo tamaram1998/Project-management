@@ -25,7 +25,7 @@ jobs:
 
       - name: Build, tag, and push Docker image to ECR
         env:
-          ECR_REGISTRY: ${{ secrets.AWS_ECR_REGISTRY }}
+          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
           ECR_REPOSITORY: project-management
           IMAGE_TAG: ${{ github.sha }}
         run: |
