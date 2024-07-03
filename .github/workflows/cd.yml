@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - feat/cd-setup
 
 jobs:
   build_docker_image:
@@ -39,8 +38,3 @@ jobs:
       - name: Update ECS service with new task definition
         run: |
             aws ecs update-service --cluster final-project --service project-management-app-4 --task-definition final-project-service:4 --force-new-deployment --region eu-central-1
-
-        
-          
-          
-        
