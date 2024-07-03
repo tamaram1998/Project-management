@@ -13,6 +13,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Create .env file
+        run: |
+          echo "${{ secrets.ENV_FILE }}" >> .env
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -34,7 +38,7 @@ jobs:
 
       - name: Update ECS service with new task definition
         run: |
-            aws ecs update-service --cluster final-project --service project-management-app --force-new-deployment --region eu-central-1
+            aws ecs update-service --cluster final-project --service project-management-app --task-definition arn:aws:ecs:eu-central-1:975050338036:task-definition/final-project-service:2 --force-new-deployment --region eu-central-1
 
         
           
