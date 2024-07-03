@@ -38,7 +38,7 @@ jobs:
 
       - name: Update ECS service with new task definition
         run: |
-            aws ecs update-service --cluster final-project --service project-management-app --task-definition arn:aws:ecs:eu-central-1:975050338036:task-definition/final-project-service:2 --force-new-deployment --region eu-central-1
+            aws ecs update-service --cluster final-project --service project-management-app-4 --task-definition final-project-service:4 --force-new-deployment --region eu-central-1
 
         
           
