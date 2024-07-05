@@ -21,8 +21,13 @@ from app.crud.project import (
     update_project_info,
     delete_specific_project,
     get_project_by_id_with_access,
+    get_project_by_id,
 )
-from app.crud.user import is_only_participant
+from app.crud.user import (
+    is_only_participant,
+    get_user_by_username,
+    add_project_participant,
+)
 
 router = APIRouter()
 
@@ -127,3 +132,52 @@ def delete_project(
             detail=f"Project with ID {project_id} not found",
         )
     return {"message": "You have successfully deleted project!"}
+
+
+# Invite a user to a project as a participant
+@router.post(
+    "/projects/{project_id}/invite",
+    response_model=None,
+    status_code=status.HTTP_200_OK,
+    tags=["Project Methods"],
+)
+async def invite_user_to_project(
+    project_id: int,
+    user_login: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    # check if current user is the owner of the project
+    project = get_project_by_id(db, project_id=project_id)
+    if not project:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Project not found"
+        )
+    if project.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only project owner can invite participants",
+        )
+
+    # fetch the user by their login
+    user_to_invite = get_user_by_username(db, email=user_login)
+    if not user_to_invite:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+    if user_to_invite.email == current_user.email:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are the owner of the project, "
+            "you cannot be added as participant",
+        )
+    try:
+        add_project_participant(db=db, project_id=project_id, user_id=user_to_invite.id)
+        return {
+            "message": f"User {user_to_invite.email} has been invited to the project"
+        }
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"User {user_to_invite.email} hasn't been invited to the project",
+        )

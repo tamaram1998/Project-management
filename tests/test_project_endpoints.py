@@ -32,10 +32,10 @@ def test_get_project_details(test_client_with_auth, test_project):
     response = test_client_with_auth.get("/project/1/info")
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
-    assert data['owner_id'] is not None
-    assert data['project_id'] == 1
-    assert data['name'] == "Test Project"
-    assert data['description'] == "Test Description"
+    assert data["owner_id"] is not None
+    assert data["project_id"] == 1
+    assert data["name"] == "Test Project"
+    assert data["description"] == "Test Description"
 
 
 def test_get_nonexistent_project_details(test_client_with_auth, test_project):

@@ -8,6 +8,8 @@ import os
 from app.models import Document, Project, ProjectParticipant
 from app.crud.project import get_project_by_id_with_access
 
+ALLOWED_EXTENSIONS = {"docx", "pdf"}
+
 s3 = boto3.client(
     "s3",
     aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
@@ -16,26 +18,48 @@ s3 = boto3.client(
 )
 
 
+def allowed_document_extension(document):
+    return "." in document and document.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
 # Upload document/documents
 async def upload_docs(db: Session, project_id: int, files: List[UploadFile]):
-    # checking if projects exist
-    project = db.query(Project).filter(Project.project_id == project_id).first()
-    if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
     uploaded_files = []
-    for file in files:
-        content = await file.read()
-        s3_key = f"{project_id}/{file.filename}"
-        s3.put_object(Bucket=os.getenv("AWS_S3_BUCKET_NAME"), Key=s3_key, Body=content)
-        file_url = (
-            f"https://{os.getenv('AWS_S3_BUCKET_NAME')}."
-            f"s3.{os.getenv('AWS_DEFAULT_REGION')}.amazonaws.com/{s3_key}"
-        )
-        filename = file_url.split("/")[-1]
-        document = Document(project_id=project_id, file_url=file_url, filename=filename)
-        db.add(document)
-        uploaded_files.append(file_url)
-    db.commit()
+
+    existing_files = (
+        db.query(Document.filename).filter(Document.project_id == project_id).all()
+    )
+    existing_filenames = {file[0] for file in existing_files}
+    try:
+        for file in files:
+            original_filename = file[0]
+            filename = original_filename
+
+            counter = 1
+            while filename in existing_filenames:
+                name, ext = os.path.splitext(original_filename)
+                filename = f"{name}({counter}){ext}"
+                counter += 1
+
+            existing_filenames.add(filename)
+            content = file[1]
+            s3_key = f"{project_id}/{filename}"
+            s3.put_object(
+                Bucket=os.getenv("AWS_S3_BUCKET_NAME"), Key=s3_key, Body=content
+            )
+            file_url = (
+                f"https://{os.getenv('AWS_S3_BUCKET_NAME')}."
+                f"s3.{os.getenv('AWS_DEFAULT_REGION')}.amazonaws.com/{s3_key}"
+            )
+            document = Document(
+                project_id=project_id, file_url=file_url, filename=filename
+            )
+            db.add(document)
+            uploaded_files.append(file_url)
+        db.commit()
+    except Exception as e:
+        print(f"Error during file upload: {e}")
+        db.rollback()
     return {"message": "Files uploaded successfully"}
 
 
@@ -70,11 +94,10 @@ def has_access_to_document(document_id: int, user_id: int, db: Session):
 # Get all documents from one project
 async def get_project_documents(project_id: int, user_id: int, db: Session):
     project = get_project_by_id_with_access(project_id, user_id, db)
-    if project is None:
-        return None
     if project.project_id == project_id:
         documents = db.query(Document).filter(Document.project_id == project_id).all()
         return documents
+    return None
 
 
 # Download document from bucket

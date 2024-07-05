@@ -22,6 +22,7 @@ class Project(Base):
     name = Column(String, index=True)
     description = Column(String, index=True)
     owner_id = Column(Integer, ForeignKey("users.id"))
+    logo_url = Column(String, index=True)
 
     # relationships
     owner = relationship("User", back_populates="projects")
@@ -45,7 +46,7 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True)
+    email = Column(String, unique=True, index=True)
     hashed_password = Column(String, nullable=False)
 
     # relationships

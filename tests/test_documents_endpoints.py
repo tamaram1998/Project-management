@@ -25,8 +25,8 @@ def test_download_document(
 async def test_upload_documents(test_client_with_auth, test_project, s3_client):
     # Files to upload
     files = [
-        ("files", ("testfile1.txt", b"Content1", "text/plain")),
-        ("files", ("testfile2.txt", b"Content 2", "text/plain")),
+        ("files", ("testfile1.pdf", b"Content1", "text/plain")),
+        ("files", ("testfile2.pdf", b"Content 2", "text/plain")),
     ]
     response = test_client_with_auth.post("/project/1/documents/", files=files)
 
@@ -42,13 +42,7 @@ async def test_list_all_project_documents(
     response = test_client_with_auth.get("/project/1/documents")
 
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == [
-        {
-            "id": 1,
-            "filename": "document.pdf",
-            "file_url": "http://example.com/document.pdf",
-        }
-    ]
+    assert response.json() == [{"id": 1, "filename": "document.pdf"}]
 
 
 # Testing deleting the documents

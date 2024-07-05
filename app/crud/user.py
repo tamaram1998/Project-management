@@ -20,14 +20,14 @@ def is_only_participant(user_id: int, project_id: int, db: Session):
 
 
 # Get user by login details
-def get_user_by_username(db: Session, username: str):
-    return db.query(User).filter(User.username == username).first()
+def get_user_by_username(db: Session, email: str):
+    return db.query(User).filter(User.email == email).first()
 
 
 # Create user
 async def create_user_db(user: UsersCreate, db: Session):
     hashed_password = await hash_pass(user.password)
-    db_user = User(username=user.username, hashed_password=hashed_password)
+    db_user = User(email=user.email, hashed_password=hashed_password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -35,8 +35,8 @@ async def create_user_db(user: UsersCreate, db: Session):
 
 
 # check existing user with the same username
-async def is_existing_user(username: str, db: Session):
-    existing_user = db.query(User).filter(User.username == username).first()
+async def is_existing_user(email: str, db: Session):
+    existing_user = db.query(User).filter(User.email == email).first()
     if existing_user:
         return True
 

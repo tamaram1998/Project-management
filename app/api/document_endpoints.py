@@ -5,12 +5,11 @@ from fastapi import (
     UploadFile,
     Response,
     APIRouter,
+    BackgroundTasks,
 )
 from sqlalchemy.orm import Session
 from typing_extensions import List
 
-# import boto3
-# from botocore.exceptions import ClientError
 from app.auth.jwt_handler import get_current_user
 from app.database import get_db
 from app.schemas import DocumentResponse
@@ -23,6 +22,7 @@ from app.crud.documents import (
     get_project_documents,
     get_document,
     delete_project_document,
+    allowed_document_extension,
 )
 
 router = APIRouter()
@@ -40,10 +40,16 @@ async def list_all_project_document(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    has_access = get_project_by_id_with_access(project_id, current_user.id, db=db)
+    if has_access is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You don't have access to this project",
+        )
     documents = await get_project_documents(
         user_id=current_user.id, project_id=project_id, db=db
     )
-    if documents is None:
+    if documents is None or len(documents) == 0:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="No documents found for this project",
@@ -61,6 +67,7 @@ async def list_all_project_document(
 async def upload_documents(
     project_id: int,
     files: List[UploadFile],
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -70,19 +77,19 @@ async def upload_documents(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You don't have access to this project",
         )
-    db_project = await upload_docs(db=db, project_id=project_id, files=files)
+
+    file_contents = []
     for file in files:
-        if file.filename in files:
+        if not allowed_document_extension(file.filename):
             raise HTTPException(
-                status_code=403,
-                detail="You have already uploaded file with the same name",
+                status_code=400, detail="Only .docx, .pdf files are allowed"
             )
-    if db_project is None:
-        raise HTTPException(
-            status_code=404,
-            detail="You don't have permission to upload the file on this project",
-        )
-    return db_project
+
+        content = await file.read()
+        file_contents.append((file.filename, content))
+
+    background_tasks.add_task(upload_docs, db, project_id, file_contents)
+    return {"message": "Files uploaded successfully"}
 
 
 # Download a document

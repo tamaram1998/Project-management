@@ -104,6 +104,7 @@ def update_project_info(
 
 # Delete specific project from all tables
 def delete_specific_project(db: Session, project_id: int, user_id: int):
+
     owner_project = (
         db.query(Project)
         .filter(Project.owner_id == user_id, Project.project_id == project_id)
@@ -112,6 +113,7 @@ def delete_specific_project(db: Session, project_id: int, user_id: int):
     if not owner_project:
         return None
 
+    # delete the project from the database
     db.delete(owner_project)
     db.commit()
     return owner_project
